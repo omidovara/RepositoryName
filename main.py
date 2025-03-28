@@ -1,97 +1,142 @@
-class Book:
-    """ Базовый класс книги. """
-    def __init__(self, name: str, author: str):
-        self._name = name
-        self._author = author
-
-    @property
-    def name(self):
-        return self._name
-
-    @name.setter
-    def name(self, value):
-        raise AttributeError("Нельзя изменять название книги.")
-
-    @property
-    def author(self):
-        return self._author
-
-    @author.setter
-    def author(self, value):
-        raise AttributeError("Нельзя изменять автора книги.")
-
-    def __str__(self):
-        return f"Книга {self.name}. Автор {self.author}"
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r})"
+from typing import List, Optional
 
 
-class PaperBook(Book):
-    def __init__(self, name: str, author: str, pages: int):
-        super().__init__(name, author)
-        self.pages = pages
+class Shape:
+    """
+    Базовый класс для геометрических фигур.
 
-    @property
-    def pages(self):
-        return self._pages
+    Args:
+        name (str): Название фигуры.
+        color (str): Цвет фигуры.
+    """
 
-    @pages.setter
-    def pages(self, value):
-        if not isinstance(value, int):
-            raise TypeError("Количество страниц должно быть целым числом.")
-        if value <= 0:
-            raise ValueError(f"Количество страниц должно быть положительным числом. Получено значение: {value}")
-        self._pages = value
+    def __init__(self, name: str, color: str) -> None:
+        """
+        Инициализирует объект Shape.
+        """
+        self.name = name
+        self.color = color
 
-    def __str__(self):
-        return f"{super().__str__()} Страниц: {self.pages}"
+    def __str__(self) -> str:
+        """
+        Возвращает строковое представление объекта Shape.
+        """
+        return f"{self.name} ({self.color})"
 
-    def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r}, pages={self.pages!r})"
+    def __repr__(self) -> str:
+        """
+        Возвращает строковое представление объекта Shape для отладки.
+        """
+        return f"Shape(name='{self.name}', color='{self.color}')"
 
+    def area(self) -> float:
+        """
+        Вычисляет площадь фигуры.  В базовом классе возвращает 0,
+        так как площадь зависит от конкретного типа фигуры.
+        """
+        return 0.0
 
-class AudioBook(Book):
-    def __init__(self, name: str, author: str, duration: float):
-        super().__init__(name, author)
-        self.duration = duration
-
-    @property
-    def duration(self):
-        return self._duration
-
-    @duration.setter
-    def duration(self, value):
-        if not isinstance(value, (int, float)):
-            raise TypeError("Продолжительность должна быть числом.")
-        if value <= 0:
-            raise ValueError(f"Продолжительность должна быть положительным числом. Получено значение: {value}")
-        self._duration = value
-
-    def __str__(self):
-        return f"{super().__str__()} Длительность: {self.duration}"
-
-    def __repr__(self):
-        return f"{self.__class__.__name__}(name={self.name!r}, author={self.author!r}, duration={self.duration!r})"
+    def describe(self) -> str:
+        """
+        Возвращает описание фигуры.
+        """
+        return f"Это {self.name} цвета {self.color}."
 
 
-if __name__ == '__main__':
-    book = Book("Мастер и Маргарита", "Булгаков")
-    print(book)
-    print(repr(book))
+class Rectangle(Shape):
+    """
+    Дочерний класс для прямоугольника, наследуется от Shape.
 
-    paper_book = PaperBook("1984", "Оруэлл", 328)
-    print(paper_book)
-    print(repr(paper_book))
-    # paper_book.pages = "строка"  # TypeError: Количество страниц должно быть целым числом.
-    # paper_book.pages = -10  # ValueError: Количество страниц должно быть положительным числом.
+    Args:
+        width (float): Ширина прямоугольника.
+        height (float): Высота прямоугольника.
+        color (str): Цвет прямоугольника.
+    """
 
-    audio_book = AudioBook("Собачье сердце", "Булгаков", 5.5)
-    print(audio_book)
-    print(repr(audio_book))
-    # audio_book.duration = "строка"  # TypeError: Продолжительность должна быть числом.
-    # audio_book.duration = -10  # ValueError: Продолжительность должна быть положительным числом.
-    try:
-        book.name = "Новое имя"  # AttributeError: Нельзя изменять название книги.
-    except AttributeError as e:
-        print(e)
+    def __init__(self, width: float, height: float, color: str) -> None:
+        """
+        Инициализирует объект Rectangle, расширяя конструктор Shape.
+        """
+        super().__init__("Rectangle", color)
+        self.width = width
+        self.height = height
+        # _perimeter - приватный атрибут, так как он вычисляется на основе ширины и высоты,
+        # и нет смысла позволять пользователю менять его напрямую.
+        self._perimeter: Optional[float] = None
+
+    def __str__(self) -> str:
+        """
+        Возвращает строковое представление объекта Rectangle.
+        Перегружает метод базового класса для добавления информации о размерах.
+        """
+        return f"{super().__str__()} (width={self.width}, height={self.height})"
+
+    def __repr__(self) -> str:
+        """
+        Возвращает строковое представление объекта Rectangle для отладки.
+        Перегружает метод базового класса для добавления информации о размерах.
+        """
+        return f"Rectangle(width={self.width}, height={self.height}, color='{self.color}')"
+
+    def area(self) -> float:
+        """
+        Вычисляет площадь прямоугольника.
+        Перегружает метод базового класса для реализации логики вычисления площади прямоугольника.
+        """
+        return self.width * self.height
+
+    def calculate_perimeter(self) -> float:
+        """
+        Вычисляет периметр прямоугольника.  Результат сохраняется в приватном атрибуте _perimeter.
+
+        # Инкапсуляция: _perimeter - приватный атрибут, так как доступ к нему должен осуществляться только через методы класса.
+        """
+        self._perimeter = 2 * (self.width + self.height)
+        return self._perimeter
+
+    def get_perimeter(self) -> float:
+        """
+        Возвращает периметр прямоугольника.
+        Если периметр еще не вычислен, то вычисляет его.
+        """
+        if self._perimeter is None:
+            self.calculate_perimeter()
+        return self._perimeter
+
+    def describe(self, include_area: bool = False) -> str:
+        """
+        Возвращает описание прямоугольника, включая его площадь, если include_area=True.
+        Перегружает метод базового класса для добавления информации о размерах и площади.
+
+        Args:
+            include_area (bool):  Флаг, указывающий, нужно ли включать площадь в описание.
+        """
+        description = f"{super().describe()} Это прямоугольник шириной {self.width} и высотой {self.height}."
+        if include_area:
+            description += f" Его площадь равна {self.area()}."
+        return description
+
+    def is_square(self) -> bool:
+        """
+        Проверяет, является ли прямоугольник квадратом.
+        """
+        return self.width == self.height
+
+
+if __name__ == "__main__":
+    # Пример использования классов
+    shape = Shape("Generic Shape", "Gray")
+    print(shape)  # Generic Shape (Gray)
+    print(repr(shape))  # Shape(name='Generic Shape', color='Gray')
+    print(shape.area())  # 0.0
+    print(shape.describe()) # Это Generic Shape цвета Gray.
+
+    rectangle = Rectangle(5.0, 10.0, "Blue")
+    print(rectangle)  # Rectangle (Blue) (width=5.0, height=10.0)
+    print(repr(rectangle))  # Rectangle(width=5.0, height=10.0, color='Blue')
+    print(rectangle.area())  # 50.0
+    print(rectangle.describe()) # Это Rectangle цвета Blue. Это прямоугольник шириной 5.0 и высотой 10.0.
+    print(rectangle.describe(include_area=True)) # Это Rectangle цвета Blue. Это прямоугольник шириной 5.0 и высотой 10.0. Его площадь равна 50.0.
+    print(rectangle.is_square())  # False
+    print(rectangle.calculate_perimeter())
+    print(rectangle.get_perimeter())
